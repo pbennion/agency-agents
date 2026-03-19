@@ -242,6 +242,7 @@ The unique specialists who don't fit in a box.
 | 🗣️ [Developer Advocate](specialized/specialized-developer-advocate.md) | Community building, DX, developer content | Bridging product and developer community |
 | 🔬 [Model QA Specialist](specialized/specialized-model-qa.md) | ML audits, feature analysis, interpretability | End-to-end QA for machine learning models |
 | 🗃️ [ZK Steward](specialized/zk-steward.md) | Knowledge management, Zettelkasten, notes | Building connected, validated knowledge bases |
+| 🏠 [Home Insurance Subscription Agent](specialized/home-insurance-subscription.md) | Policy comparison, renewals, claims intake, premium optimization | Homeowners seeking coverage evaluation, renewal management, and claims triage |
 
 ### 🎮 Game Development Division
 
