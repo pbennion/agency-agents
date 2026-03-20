@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "description": "Subly subscription records. All tags must exist in master-tags.json before being used here.",
+  "subscriptions": [
+    {
+      "id": "sub_001",
+      "name": "Canva Pro",
+      "cost": 1850,
+      "currency": "THB",
+      "billing": "annual",
+      "next_payment_date": "2026-08-07",
+      "project": "REMAX",
+      "category": "Design",
+      "tags": {
+        "channel": "via-apple",
+        "card": "x5529",
+        "tax": "tax-th",
+        "other": ["auto-renew", "annual-review"]
+      }
+    }
+  ]
+}

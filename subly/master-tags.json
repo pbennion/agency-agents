@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "description": "Master tag list for Subly subscription tracking. All tags used in subscriptions.json must exist here.",
+  "tags": {
+    "channel": {
+      "description": "How the subscription was purchased / payment channel",
+      "values": [
+        "via-apple",
+        "via-google",
+        "via-web",
+        "direct",
+        "via-stripe",
+        "via-paypal"
+      ]
+    },
+    "card": {
+      "description": "Last 4 digits of the card used, prefixed with x",
+      "pattern": "^x[0-9]{4}$",
+      "values": [
+        "x5529"
+      ]
+    },
+    "tax": {
+      "description": "Tax jurisdiction / deductibility category",
+      "values": [
+        "tax-th",
+        "tax-au",
+        "tax-us",
+        "tax-uk",
+        "tax-sg",
+        "no-tax"
+      ]
+    },
+    "other": {
+      "description": "Miscellaneous flags for billing behaviour and review cycles",
+      "values": [
+        "auto-renew",
+        "manual-renew",
+        "annual-review",
+        "monthly-review",
+        "cancelled",
+        "paused",
+        "trial"
+      ]
+    }
+  }
+}
