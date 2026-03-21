@@ -64,6 +64,83 @@ See the [Multi-Tool Integrations](#-multi-tool-integrations) section below for f
 
 ---
 
+## 💻 Desktop Installation
+
+### Prerequisites
+
+- **macOS / Linux**: bash, git
+- **Windows**: PowerShell or WSL2 with bash
+
+### Step 1 — Clone the repository
+
+```bash
+git clone https://github.com/msitarzewski/agency-agents.git
+cd agency-agents
+```
+
+### Step 2 — Install for Claude Code (recommended)
+
+```bash
+# macOS / Linux
+./scripts/install.sh --tool claude-code
+
+# Windows (PowerShell)
+# Copy agent files manually to %USERPROFILE%\.claude\agents\
+```
+
+Agents are copied to `~/.claude/agents/`. No conversion step needed.
+
+### Step 2 (alternative) — Install for other tools
+
+```bash
+# Generate integration files first
+./scripts/convert.sh
+
+# Interactive install — auto-detects tools on your system
+./scripts/install.sh
+
+# Or target a specific tool
+./scripts/install.sh --tool cursor
+./scripts/install.sh --tool copilot
+./scripts/install.sh --tool windsurf
+./scripts/install.sh --tool aider
+```
+
+See the [Multi-Tool Integrations](#-multi-tool-integrations) section for all supported tools and their install paths.
+
+### Step 3 — Activate an agent
+
+In Claude Code (or your chosen tool), reference an agent by name:
+
+```
+Use the Backend Architect agent to design this API.
+```
+
+---
+
+## 📱 Mobile Installation
+
+Claude Code is a desktop CLI tool and does not run on mobile. To use The Agency agents on your phone or tablet, you can load them manually into the [Claude.ai](https://claude.ai) mobile app via **Projects**.
+
+### iOS & Android (Claude.ai App)
+
+1. **Download** the [Claude.ai app](https://claude.ai) from the App Store or Google Play.
+2. **Open** the app and sign in to your Anthropic account.
+3. **Create a new Project**: tap the menu icon → **New Project**.
+4. **Add an agent as the Project system prompt**:
+   - Browse the agent files in this repo (e.g., `engineering/engineering-frontend-developer.md`).
+   - Copy the full file contents.
+   - In the Project settings, paste the agent content into the **Custom Instructions** (system prompt) field.
+5. **Start a conversation** inside the Project — the agent personality and workflows are now active.
+
+> **Tip**: Create one Project per agent so you can quickly switch between specialists on mobile.
+
+### One-tap copy links (Claude.ai Web)
+
+If you are on a desktop browser, you can also open any agent file on GitHub, copy its raw content, and paste it into a Claude.ai Project's custom instructions for use across web and mobile.
+
+---
+
 ## 🎨 The Agency Roster
 
 ### 💻 Engineering Division
