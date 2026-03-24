@@ -18,7 +18,8 @@
       "description": "Last 4 digits of the card used, prefixed with x",
       "pattern": "^x[0-9]{4}$",
       "values": [
-        "x5529"
+        "x5529",
+        "x6341"
       ]
     },
     "tax": {

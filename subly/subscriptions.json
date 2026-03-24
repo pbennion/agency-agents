@@ -33,7 +33,10 @@
       "project": "REMAX",
       "category": "CRM",
       "tags": {
-        "channel": "via-direct"
+        "channel": "via-direct",
+        "card": "x6341",
+        "tax": "tax-th",
+        "other": ["annual-review"]
       }
     },
     {
@@ -51,7 +54,10 @@
       "project": "Eden Valley",
       "category": "CRM",
       "tags": {
-        "channel": "via-direct"
+        "channel": "via-direct",
+        "card": "x6341",
+        "tax": "tax-th",
+        "other": ["annual-review"]
       }
     }
   ]
