@@ -17,6 +17,38 @@
         "tax": "tax-th",
         "other": ["auto-renew", "annual-review"]
       }
+    },
+    {
+      "id": "sub_002",
+      "name": "Kommo CRM",
+      "account_name": "Bukit Siam",
+      "account_number": "34167075",
+      "account_email": "info@bukitsiam.com",
+      "plan": "Base",
+      "seats": 1,
+      "cost": null,
+      "currency": null,
+      "billing": "semi-annual",
+      "next_payment_date": "2026-06-16",
+      "project": "REMAX",
+      "category": "CRM",
+      "tags": {}
+    },
+    {
+      "id": "sub_003",
+      "name": "Kommo CRM",
+      "account_name": "Happy Ours Phuket",
+      "account_number": "33357727",
+      "account_email": "charter@happyoursphuket.com",
+      "plan": "Base",
+      "seats": 1,
+      "cost": null,
+      "currency": null,
+      "billing": "semi-annual",
+      "next_payment_date": "2026-10-24",
+      "project": "Eden Valley",
+      "category": "CRM",
+      "tags": {}
     }
   ]
 }
