@@ -1412,6 +1412,247 @@ async def kommo_add_call(params: KommoAddCallInput) -> str:
 
 
 # ═══════════════════════════════════════════════════════════
+# CATALOGS (LISTS)
+# ═══════════════════════════════════════════════════════════
+
+class ListCatalogsInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    page: Optional[int] = Field(default=1, ge=1, description="Page number")
+    limit: Optional[int] = Field(default=50, ge=1, le=50, description="Items per page, max 50")
+    response_format: ResponseFormat = Field(default=ResponseFormat.MARKDOWN)
+
+
+@mcp.tool(
+    name="kommo_list_catalogs",
+    description="List all catalogs (lists) in Kommo. Catalogs are custom entity lists such as Products, Services, or Properties.",
+    annotations={"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True},
+)
+async def kommo_list_catalogs(params: ListCatalogsInput) -> str:
+    try:
+        data = await _get("/catalogs", {"page": params.page, "limit": params.limit})
+        catalogs = _embedded(data, "catalogs")
+        if params.response_format == ResponseFormat.JSON:
+            return _fmt(catalogs)
+        if not catalogs:
+            return "No catalogs found."
+        lines = ["## Catalogs\n"]
+        for c in catalogs:
+            lines.append(f"- **{c.get('name', 'Unnamed')}** (ID: {c.get('id')}) — type: {c.get('type', '?')}, elements: {c.get('elements_count', '?')}")
+        return "\n".join(lines)
+    except Exception as e:
+        return _error(e)
+
+
+class GetCatalogInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    catalog_id: int = Field(..., description="Catalog ID")
+    response_format: ResponseFormat = Field(default=ResponseFormat.MARKDOWN)
+
+
+@mcp.tool(
+    name="kommo_get_catalog",
+    description="Get details of a specific catalog (list) by ID.",
+    annotations={"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True},
+)
+async def kommo_get_catalog(params: GetCatalogInput) -> str:
+    try:
+        data = await _get(f"/catalogs/{params.catalog_id}")
+        if params.response_format == ResponseFormat.JSON:
+            return _fmt(data)
+        return (
+            f"## Catalog: {data.get('name', 'Unnamed')}\n"
+            f"- **ID**: {data.get('id')}\n"
+            f"- **Type**: {data.get('type', '?')}\n"
+            f"- **Elements count**: {data.get('elements_count', '?')}\n"
+            f"- **Created**: {data.get('created_at', '?')}\n"
+        )
+    except Exception as e:
+        return _error(e)
+
+
+class ListCatalogElementsInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    catalog_id: int = Field(..., description="Catalog ID")
+    query: Optional[str] = Field(default=None, description="Search query to filter elements by name")
+    page: Optional[int] = Field(default=1, ge=1, description="Page number")
+    limit: Optional[int] = Field(default=50, ge=1, le=50, description="Items per page, max 50")
+    response_format: ResponseFormat = Field(default=ResponseFormat.MARKDOWN)
+
+
+@mcp.tool(
+    name="kommo_list_catalog_elements",
+    description="List elements (items) in a catalog. Use query to search by name.",
+    annotations={"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True},
+)
+async def kommo_list_catalog_elements(params: ListCatalogElementsInput) -> str:
+    try:
+        p: Dict[str, Any] = {"page": params.page, "limit": params.limit}
+        if params.query:
+            p["filter[query]"] = params.query
+        data = await _get(f"/catalogs/{params.catalog_id}/elements", p)
+        elements = _embedded(data, "elements")
+        if params.response_format == ResponseFormat.JSON:
+            return _fmt(elements)
+        if not elements:
+            return "No elements found."
+        lines = [f"## Catalog {params.catalog_id} Elements\n"]
+        for el in elements:
+            lines.append(f"- **{el.get('name', 'Unnamed')}** (ID: {el.get('id')}) — price: {el.get('price', '?')}")
+        return "\n".join(lines)
+    except Exception as e:
+        return _error(e)
+
+
+class CreateCatalogElementInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    catalog_id: int = Field(..., description="Catalog ID to add the element to")
+    name: str = Field(..., description="Element name")
+    price: Optional[int] = Field(default=None, description="Price in minor currency units (e.g. cents)")
+    custom_fields_values: Optional[List[Dict[str, Any]]] = Field(default=None, description="Custom field values for the element")
+
+
+@mcp.tool(
+    name="kommo_create_catalog_element",
+    description="Create a new element (item) in a catalog (list).",
+    annotations={"readOnlyHint": False, "destructiveHint": False, "idempotentHint": False},
+)
+async def kommo_create_catalog_element(params: CreateCatalogElementInput) -> str:
+    try:
+        body: Dict[str, Any] = {"name": params.name}
+        if params.price is not None:
+            body["price"] = params.price
+        if params.custom_fields_values:
+            body["custom_fields_values"] = params.custom_fields_values
+        data = await _post(f"/catalogs/{params.catalog_id}/elements", [body])
+        elements = _embedded(data, "elements")
+        if not elements:
+            return _fmt(data)
+        el = elements[0]
+        return f"Created element **{el.get('name')}** (ID: {el.get('id')}) in catalog {params.catalog_id}."
+    except Exception as e:
+        return _error(e)
+
+
+class UpdateCatalogElementInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    catalog_id: int = Field(..., description="Catalog ID")
+    element_id: int = Field(..., description="Element ID to update")
+    name: Optional[str] = Field(default=None, description="New name")
+    price: Optional[int] = Field(default=None, description="New price in minor currency units")
+    custom_fields_values: Optional[List[Dict[str, Any]]] = Field(default=None, description="Custom field values to update")
+
+
+@mcp.tool(
+    name="kommo_update_catalog_element",
+    description="Update an existing element in a catalog (list).",
+    annotations={"readOnlyHint": False, "destructiveHint": False, "idempotentHint": True},
+)
+async def kommo_update_catalog_element(params: UpdateCatalogElementInput) -> str:
+    try:
+        body: Dict[str, Any] = {"id": params.element_id}
+        if params.name is not None:
+            body["name"] = params.name
+        if params.price is not None:
+            body["price"] = params.price
+        if params.custom_fields_values:
+            body["custom_fields_values"] = params.custom_fields_values
+        data = await _patch(f"/catalogs/{params.catalog_id}/elements", [body])
+        elements = _embedded(data, "elements")
+        if not elements:
+            return _fmt(data)
+        el = elements[0]
+        return f"Updated element **{el.get('name')}** (ID: {el.get('id')}) in catalog {params.catalog_id}."
+    except Exception as e:
+        return _error(e)
+
+
+class GetLeadLinksInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    lead_id: int = Field(..., description="Lead ID")
+    response_format: ResponseFormat = Field(default=ResponseFormat.MARKDOWN)
+
+
+@mcp.tool(
+    name="kommo_get_lead_links",
+    description="Get all catalog elements (list items) linked to a lead.",
+    annotations={"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True},
+)
+async def kommo_get_lead_links(params: GetLeadLinksInput) -> str:
+    try:
+        data = await _get(f"/leads/{params.lead_id}/links")
+        links = _embedded(data, "links")
+        if params.response_format == ResponseFormat.JSON:
+            return _fmt(links)
+        if not links:
+            return f"Lead {params.lead_id} has no linked catalog elements."
+        lines = [f"## Linked Catalog Elements for Lead {params.lead_id}\n"]
+        for lnk in links:
+            lines.append(
+                f"- Entity ID: {lnk.get('to_entity_id')} | Type: {lnk.get('to_entity_type')} "
+                f"| Catalog: {lnk.get('metadata', {}).get('catalog_id', '?')} "
+                f"| Qty: {lnk.get('metadata', {}).get('quantity', '?')}"
+            )
+        return "\n".join(lines)
+    except Exception as e:
+        return _error(e)
+
+
+class LinkCatalogToLeadInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    lead_id: int = Field(..., description="Lead ID to link to")
+    catalog_id: int = Field(..., description="Catalog ID the element belongs to")
+    element_id: int = Field(..., description="Catalog element ID to link")
+    quantity: Optional[int] = Field(default=1, ge=1, description="Quantity (for product catalogs)")
+    price_id: Optional[int] = Field(default=None, description="Price variant ID (optional)")
+
+
+@mcp.tool(
+    name="kommo_link_catalog_to_lead",
+    description="Link a catalog element (list item) to a lead. Use this to associate products, services, or other catalog items with a lead.",
+    annotations={"readOnlyHint": False, "destructiveHint": False, "idempotentHint": False},
+)
+async def kommo_link_catalog_to_lead(params: LinkCatalogToLeadInput) -> str:
+    try:
+        metadata: Dict[str, Any] = {"catalog_id": params.catalog_id, "quantity": params.quantity}
+        if params.price_id is not None:
+            metadata["price_id"] = params.price_id
+        body = [{"to_entity_id": params.element_id, "to_entity_type": "catalog_elements", "metadata": metadata}]
+        data = await _post(f"/leads/{params.lead_id}/links", body)
+        return f"Linked catalog element {params.element_id} (catalog {params.catalog_id}) to lead {params.lead_id}."
+    except Exception as e:
+        return _error(e)
+
+
+class UnlinkCatalogFromLeadInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    lead_id: int = Field(..., description="Lead ID")
+    catalog_id: int = Field(..., description="Catalog ID the element belongs to")
+    element_id: int = Field(..., description="Catalog element ID to unlink")
+
+
+@mcp.tool(
+    name="kommo_unlink_catalog_from_lead",
+    description="Unlink a catalog element (list item) from a lead.",
+    annotations={"readOnlyHint": False, "destructiveHint": True, "idempotentHint": True},
+)
+async def kommo_unlink_catalog_from_lead(params: UnlinkCatalogFromLeadInput) -> str:
+    try:
+        body = [{"to_entity_id": params.element_id, "to_entity_type": "catalog_elements",
+                 "metadata": {"catalog_id": params.catalog_id}}]
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            r = await client.request(
+                "DELETE",
+                f"{_base_url()}/leads/{params.lead_id}/links",
+                headers=_headers(),
+                json=body,
+            )
+            r.raise_for_status()
+        return f"Unlinked catalog element {params.element_id} from lead {params.lead_id}."
+    except Exception as e:
+        return _error(e)
+
+
+# ═══════════════════════════════════════════════════════════
 # ENTRY POINT
 # ═══════════════════════════════════════════════════════════
 
