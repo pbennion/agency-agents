@@ -26,13 +26,15 @@
       "account_email": "info@bukitsiam.com",
       "plan": "Base",
       "seats": 1,
-      "cost": null,
-      "currency": null,
-      "billing": "semi-annual",
+      "cost": 58.50,
+      "currency": "USD",
+      "billing": "7-month",
       "next_payment_date": "2026-06-16",
       "project": "REMAX",
       "category": "CRM",
-      "tags": {}
+      "tags": {
+        "channel": "via-direct"
+      }
     },
     {
       "id": "sub_003",
@@ -42,13 +44,15 @@
       "account_email": "charter@happyoursphuket.com",
       "plan": "Base",
       "seats": 1,
-      "cost": null,
-      "currency": null,
-      "billing": "semi-annual",
+      "cost": 58.50,
+      "currency": "USD",
+      "billing": "7-month",
       "next_payment_date": "2026-10-24",
       "project": "Eden Valley",
       "category": "CRM",
-      "tags": {}
+      "tags": {
+        "channel": "via-direct"
+      }
     }
   ]
 }

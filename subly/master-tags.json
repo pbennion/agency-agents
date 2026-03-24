@@ -8,6 +8,7 @@
         "via-apple",
         "via-google",
         "via-web",
+        "via-direct",
         "direct",
         "via-stripe",
         "via-paypal"
